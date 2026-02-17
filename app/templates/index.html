@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>URL Shortener</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .short-link {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        .badge-clicks {
+            font-size: 0.9rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <div class="hero">
+        <h1>🔗 URL Shortener</h1>
+        <p class="text-muted">Fast. Simple. Reliable.</p>
+    </div>
+
+    <div class="card p-4 mb-5">
+        <form action="/shorten" method="post">
+            <div class="input-group">
+                <input type="text" name="original_url" class="form-control form-control-lg"
+                       placeholder="Enter your long URL here..." required>
+                <button class="btn btn-primary btn-lg">Shorten</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card p-4">
+        <h5 class="mb-3">📊 Your Links</h5>
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Original URL</th>
+                    <th>Short Link</th>
+                    <th>Clicks</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for url in urls %}
+                <tr>
+                    <td style="max-width: 250px; overflow:hidden; text-overflow:ellipsis;">
+                        {{ url.original_url }}
+                    </td>
+
+                    <td>
+                        <a href="/{{ url.short_code }}" target="_blank"
+                           class="short-link">
+                            {{ url.short_code }}
+                        </a>
+                    </td>
+
+                    <td>
+                        <span class="badge bg-success badge-clicks">
+                            {{ url.clicks }} clicks
+                        </span>
+                    </td>
+
+                    <td>
+                        <small class="text-muted">
+                            {{ url.created_at.strftime('%Y-%m-%d') }}
+                        </small>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
