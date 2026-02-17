@@ -1,106 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>URL Shortener</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
-            background-color: #f4f6f9;
-        }
-
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-
-        .short-link {
-            font-weight: bold;
-            color: #0d6efd;
-        }
-
-        .badge-clicks {
-            font-size: 0.9rem;
+            background: linear-gradient(135deg, #eef2f7, #f8f9fb);
+            font-family: 'Segoe UI', sans-serif;
         }
 
         .hero {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
 
         .hero h1 {
             font-weight: 700;
+            font-size: 2.5rem;
+        }
+
+        .hero p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            border: none;
+        }
+
+        .form-control {
+            border-radius: 50px;
+            padding-left: 20px;
+        }
+
+        .btn-primary {
+            border-radius: 50px;
+            padding: 10px 25px;
+        }
+
+        .short-link {
+            font-weight: 600;
+            color: #0d6efd;
+            text-decoration: none;
+        }
+
+        .short-link:hover {
+            text-decoration: underline;
+        }
+
+        .table thead {
+            background-color: #f1f3f5;
+        }
+
+        .badge-clicks {
+            font-size: 0.8rem;
+        }
+
+        .copy-btn {
+            border-radius: 20px;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #999;
         }
     </style>
 </head>
 
 <body>
 
-<div class="container mt-5">
+<div class="container py-5">
 
+    <!-- Hero -->
     <div class="hero">
         <h1>🔗 URL Shortener</h1>
-        <p class="text-muted">Fast. Simple. Reliable.</p>
+        <p>Fast. Clean. Reliable link management.</p>
     </div>
 
+    <!-- Input Card -->
     <div class="card p-4 mb-5">
         <form action="/shorten" method="post">
             <div class="input-group">
-                <input type="text" name="original_url" class="form-control form-control-lg"
-                       placeholder="Enter your long URL here..." required>
-                <button class="btn btn-primary btn-lg">Shorten</button>
+                <input type="text"
+                       name="original_url"
+                       class="form-control form-control-lg"
+                       placeholder="Paste your long URL here..."
+                       required>
+                <button class="btn btn-primary btn-lg">
+                    Shorten
+                </button>
             </div>
         </form>
     </div>
 
+    <!-- Links Table -->
     <div class="card p-4">
-        <h5 class="mb-3">📊 Your Links</h5>
+        <h5 class="mb-4">📊 Your Links</h5>
 
-        <table class="table align-middle">
-            <thead>
-                <tr>
-                    <th>Original URL</th>
-                    <th>Short Link</th>
-                    <th>Clicks</th>
-                    <th>Created</th>
-                </tr>
-            </thead>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Original URL</th>
+                        <th>Short Link</th>
+                        <th>Clicks</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
 
-            <tbody>
-                {% for url in urls %}
-                <tr>
-                    <td style="max-width: 250px; overflow:hidden; text-overflow:ellipsis;">
-                        {{ url.original_url }}
-                    </td>
+                <tbody>
+                    {% for url in urls %}
+                    <tr>
+                        <td style="max-width: 250px; overflow:hidden; text-overflow:ellipsis;">
+                            {{ url.original_url }}
+                        </td>
 
-                    <td>
-                        <a href="/{{ url.short_code }}" target="_blank"
-                           class="short-link">
-                            {{ url.short_code }}
-                        </a>
-                    </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="/{{ url.short_code }}" target="_blank"
+                                   class="short-link">
+                                    {{ url.short_code }}
+                                </a>
 
-                    <td>
-                        <span class="badge bg-success badge-clicks">
-                            {{ url.clicks }} clicks
-                        </span>
-                    </td>
+                                <button class="btn btn-sm btn-outline-secondary copy-btn"
+                                    onclick="copyToClipboard('{{ request.url.scheme }}://{{ request.url.hostname }}:8000/{{ url.short_code }}')">
+                                    Copy
+                                </button>
+                            </div>
+                        </td>
 
-                    <td>
-                        <small class="text-muted">
-                            {{ url.created_at.strftime('%Y-%m-%d') }}
-                        </small>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                        <td>
+                            <span class="badge bg-success badge-clicks">
+                                {{ url.clicks }} clicks
+                            </span>
+                        </td>
 
-        </table>
+                        <td>
+                            <small class="text-muted">
+                                {{ url.created_at.strftime('%Y-%m-%d') }}
+                            </small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Built with FastAPI • PostgreSQL • Bootstrap
     </div>
 
 </div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="copyToast" class="toast align-items-center text-bg-success border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        Copied to clipboard!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto"
+              data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text);
+    const toast = new bootstrap.Toast(document.getElementById('copyToast'));
+    toast.show();
+}
+</script>
 
 </body>
 </html>
